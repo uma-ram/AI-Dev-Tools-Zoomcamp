@@ -1,0 +1,50 @@
+{% extends 'todos/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-card">
+        <h2>{% if object %}✎ Edit TODO{% else %}✨ Create TODO{% endif %}</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <span class="error">{{ form.title.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <span class="error">{{ form.description.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.due_date.id_for_label }}">Due Date</label>
+                {{ form.due_date }}
+                {% if form.due_date.errors %}
+                    <span class="error">{{ form.due_date.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            {% if object %}
+            <div class="form-group">
+                <label for="{{ form.resolved.id_for_label }}">
+                    <input type="checkbox" name="resolved" id="{{ form.resolved.id_for_label }}" {% if form.resolved.value %}checked{% endif %}>
+                    Mark as completed
+                </label>
+            </div>
+            {% endif %}
+            
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Save TODO</button>
+                <a href="{% url 'todo-list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

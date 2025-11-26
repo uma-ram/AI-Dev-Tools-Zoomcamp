@@ -1,0 +1,122 @@
+{% extends 'todos/base.html' %}
+
+{% block content %}
+<div class="container">
+    <!-- Create TODO Form Section -->
+    <div class="form-card">
+        <h2>✨ Create New TODO</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">Title *</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <span class="error">{{ form.title.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.due_date.id_for_label }}">Due Date</label>
+                {{ form.due_date }}
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Add TODO</button>
+        </form>
+    </div>
+
+    <!-- TODO List Section -->
+    <div class="todos-section">
+        <h2>📋 Your TODOs</h2>
+        
+        <!-- Active TODOs Table -->
+        <div class="table-section">
+            <h3>Active Tasks</h3>
+            {% if todos|length > 0 %}
+            <div class="table-container">
+                <table class="todo-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for todo in todos %}
+                            {% if not todo.resolved %}
+                            <tr>
+                                <td class="todo-title">{{ todo.title }}</td>
+                                <td class="todo-desc">{{ todo.description|default:"—" }}</td>
+                                <td class="todo-date">
+                                    {% if todo.due_date %}
+                                        {{ todo.due_date|date:"M d, Y" }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td class="todo-date">{{ todo.created_at|date:"M d, Y" }}</td>
+                                <td class="actions">
+                                    <a href="{% url 'todo-toggle' todo.pk %}" class="btn btn-sm btn-success" title="Mark Complete">✓</a>
+                                    <a href="{% url 'todo-update' todo.pk %}" class="btn btn-sm btn-primary" title="Edit">✎</a>
+                                    <a href="{% url 'todo-delete' todo.pk %}" class="btn btn-sm btn-danger" title="Delete">✕</a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p class="empty-state">No active tasks! 🎉</p>
+            {% endif %}
+        </div>
+
+        <!-- Completed TODOs Table -->
+        <div class="table-section">
+            <h3>Completed Tasks</h3>
+            <div class="table-container">
+                <table class="todo-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Completed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for todo in todos %}
+                            {% if todo.resolved %}
+                            <tr class="completed-row">
+                                <td class="todo-title">{{ todo.title }}</td>
+                                <td class="todo-desc">{{ todo.description|default:"—" }}</td>
+                                <td class="todo-date">
+                                    {% if todo.due_date %}
+                                        {{ todo.due_date|date:"M d, Y" }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td class="todo-date">{{ todo.updated_at|date:"M d, Y" }}</td>
+                                <td class="actions">
+                                    <a href="{% url 'todo-toggle' todo.pk %}" class="btn btn-sm btn-warning" title="Mark Incomplete">↻</a>
+                                    <a href="{% url 'todo-delete' todo.pk %}" class="btn btn-sm btn-danger" title="Delete">✕</a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
